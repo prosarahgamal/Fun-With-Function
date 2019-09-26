@@ -55,3 +55,29 @@ const liftf = function (binary) {
         }
     }
 }
+
+/**
+ * Write a function curry that takes a binary function
+ * and an argument, and returns a function that takes
+ * a second argument.
+ * 
+ * const add3 = curry(add, 3);
+ * add3(4) // 7
+ * curry(mul, 5)(6) // 30
+ */
+const curry = function (binary, x) {
+    return liftf(binary)(x);
+}
+
+/**
+ * Without writing any new functions
+ * show three ways to create the inc function.
+ * 
+ * const inc = _ _ _ ;
+ * inc(5) // 6
+ * inc(inc(5)) // 7
+ */
+
+const inc1 = addf(1);
+const inc2 = liftf(add)(1);
+const inc3 = curry(add, 1);
