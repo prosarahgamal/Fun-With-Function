@@ -81,3 +81,80 @@ const curry = function (binary, x) {
 const inc1 = addf(1);
 const inc2 = liftf(add)(1);
 const inc3 = curry(add, 1);
+
+/**
+ * Write a function twice that takes a binary function 
+ * and returns a unary function that passes its arguments
+ * to the binary function twice.
+ * 
+ * add(11, 11) // 22
+ * const doubl = twice(add);
+ * double(11); // 22
+ * const square = twice(mul)
+ * square(11) // 121
+ */
+
+const twice = function (binary) {
+    return function (x) {
+        return binary(x, x);
+    }
+}
+
+/**
+ * Write reverse, a function that reverses the arguments
+ * of a binary function.
+ * 
+ * const bus = reverse(sub);
+ * bus(3, 2);
+ */
+
+const reverse = function (binary) {
+    return function (x, y) {
+        return binary(y, x);
+    }
+}
+
+/**
+ * Write a function composeu that takes two unary functions 
+ * and returns a unary function that calls them both.
+ * 
+ * composeu(doubl, square)(5)    // 100
+ */
+
+const composeu = function (fun1, fun2) {
+    return function (x) {
+        return fun2(fun1(x));
+    }
+}
+
+/**
+ * Write a function composeb that takes two binary functions 
+ * and returns a function that calls them both.
+ * 
+ * composeb(add, mul)(2, 3, 7)    // 35
+ */
+
+const composeb = function (fun1, fun2) {
+    return function (x, y, z) {
+        return fun2(fun1(x, y), z);
+    }
+}
+
+/**
+ * Write a limit function that allows a binary function
+ * to be called a limited number of times.
+ *
+ * const add_ltd = limit(add, 1);
+ * add_ltd(3, 4)    // 7
+ * add_ltd(3, 5)    // undefined
+ */
+
+const limit = function (fun, times) {
+    return function (...args) {
+        if (times >= 1) {
+            times -= 1;
+            return fun(...args);
+        }
+        return undefined;
+    }
+}
