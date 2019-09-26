@@ -228,3 +228,91 @@ const element = function (arr, gen) {
         }
     }
 }
+
+/**
+ * Modify the element function so that the generator argument is optional. 
+ * If a generator is not provided, then each of the elements of the array will be produced.
+ * 
+ * const ele = element(['a', 'b', 'c', 'd']);
+ * ele()    // 'a'
+ * ele()    // 'b'
+ * ele()    // 'c'
+ * ele()    // 'd'
+ * ele()    // undefined
+ */
+
+const modefiedElement = function(arr, gen=null){
+    gen = gen || fromTo(0, arr.length);
+    return function () {
+       const index = gen()
+       if (index !== undefined) {
+           return arr[index];
+       }
+   }
+}
+
+/**
+* Write a collect function that takes a generator and an array 
+* and produces a function that will collect the results in the array
+* 
+* const array = [], col = collect(fromTo(0, 2), array);
+* col()    // 0
+* col()    // 1
+* col()    // undefined
+* array    // [0, 1]
+*/
+
+const collect = function(gen, arr){
+   return function(){
+       const val = gen();
+       if(val !== undefined){
+           arr.push(val);
+           return val;
+       }
+   }
+}
+
+/**
+* Write a filter function that takes a generator and a predicate 
+* and produces a generator that produces only the values approved by the predicate.
+* 
+* const fil = filter(fromTo(0, 5), function third(value) {return (value % 3) === 0;});
+* fil()    // 0
+* fil()    // 3
+* fil()    // undefined
+*/
+
+const filter = function(gen, predicate){
+   return function recur(){
+       const currentVal = gen();
+       if(currentVal === undefined || predicate(currentVal)){
+           return currentVal;
+       }
+       return recur();
+   }
+}
+
+/**
+* Write a concat function that takes two generators 
+* and produces a generator that combines the sequences.
+* 
+* const con = concat(fromTo(0, 3),fromTo(0,2));
+* con()    // 0
+* con()    // 1
+* con()    // 2
+* con()    // 0
+* con()    // 1
+* con()    // undefined
+*/
+
+const concat = function(gen1, gen2){
+    let currentGen = gen1;
+    return function(){
+        const currentVal = currentGen();
+        if(currentVal !== undefined){
+            return currentVal;
+        }
+        currentGen = gen2;
+        return currentGen();
+    }
+}
