@@ -158,3 +158,73 @@ const limit = function (fun, times) {
         return undefined;
     }
 }
+
+/**
+ * Write a from function that produces a generator 
+ * that will produce a series of values.
+ * 
+ * const index = from(0);
+ * index()    // 0
+ * index()    // 1
+ * index()    // 2
+ */
+
+const from = function (start) {
+    return function () {
+        const currentVal = start;
+        start += 1;
+        return currentVal;
+    }
+}
+
+/**
+ * Write a to function that takes a generator and an end value, 
+ * and returns a generator that will produce numbers up to that limit.
+ * 
+ * const index = to(from(1), 3);
+ * index()    // 1
+ * index()    // 2
+ * index()    // undefined
+ */
+
+const to = function (generator, end) {
+    return function () {
+        const currentVal = generator();
+        if (currentVal < end) return currentVal;
+        return undefined;
+    }
+}
+
+/**
+ * Write a fromTo function that produces a generator 
+ * that will produce values in a range.
+ * 
+ * const index = fromTo(0, 3);
+ * index()    // 0
+ * index()    // 1
+ * index()    // 2
+ * index()    // undefined
+ */
+
+const fromTo = function (start, end) {
+    return to(from(start), end);
+}
+
+/**
+ * Write an element function that takes an array and a generator 
+ * and returns a generator that will produce elements from the array.
+ * 
+ * const ele = element(['a', 'b', 'c', 'd'], fromTo(1, 3));
+ * ele()    // 'b'
+ * ele()    // 'c'
+ * ele()    // undefined
+ */
+
+const element = function (arr, gen) {
+    return function () {
+        const index = gen()
+        if (index !== undefined) {
+            return arr[index];
+        }
+    }
+}
