@@ -316,3 +316,121 @@ const concat = function(gen1, gen2){
         return currentGen();
     }
 }
+
+/**
+ * Write a repeat function that takes a generator 
+ * and calls it until it returns undefined.
+ * 
+ * const array = [];
+ * repeat(collect(fromTo(0, 4), array));
+ * log(array);    // 0, 1, 2, 3
+ */
+
+ const repeat = function(gen){
+     while(gen() !== undefined);
+ }
+
+ /**
+  * Write a map function that takes an array and a unary function, 
+  * and returns an array containing the result of passing each element 
+  * to the unary function. Use the repeat function.
+  * 
+  * map([2, 1, 0], inc1)    // [3, 2, 1]
+  */
+
+  const map = function(arr, fun){
+      const newArr = [];
+      arr.forEach(element => {
+          newArr.push(fun(element));
+      });
+      return newArr;
+  }
+ 
+/**
+ * Write a reduce function that takes an array and a binary function, 
+ * and returns a single value. Use the repeat function.
+ * 
+ * reduce([], add)           // undefined
+ * reduce([2], add)          // 2
+ * reduce([2, 1, 0], add)    // 3
+ */
+
+const reduce = function (arr, fun) {
+    const ele = modefiedElement(arr);
+    let accumlator;
+    repeat(function () {
+        const val = ele();
+        if (val !== undefined) {
+            accumlator = accumlator === undefined
+                ? val
+                : fun(accumlator, val);
+        }
+        return val
+    });
+    return accumlator;
+}
+
+console.log(reduce([2, 1, 3], add));
+
+/**
+ * Make a function gensymf that makes a function 
+ * that generates  unique symbols.
+ * 
+ * const geng = gensymf("G"), genh = gensymf("H");
+ * geng()      // "G1"
+ * genh()      // "H1"
+ * geng()      // "G2"
+ * genh()      // "H2"
+ */
+
+ const gensymf = function(s){
+     const gen = from(1);
+     return function(){
+         return `${s}${gen()}`;
+     }
+ }
+
+ /**
+  * Write a function gensymff that takes a unary function 
+  * and a seed and returns a gensymf.
+  * 
+  * const gensymf = gensymff(inc, 0),
+  * geng = gensymf("G"),
+  * genh = gensymf("H"); 
+  * geng()      // "G1"
+  * genh()      // "H1"
+  * geng()      // "G2"
+  * genh()      // "H2"
+  */
+
+  const gensymff = function(unary, seed){
+      return function(s){
+          let start = seed;
+          return function(){
+              return `${s}${unary(start)}`;
+          }
+      }
+  }
+
+/**
+ * Make a function fibonaccif that returns a generator 
+ * that will return the next fibonacci number.
+ * 
+ * const fib = fibonaccif(0, 1);
+ * fib()    // 0
+ * fib()    // 1
+ * fib()    // 1
+ * fib()    // 2
+ * fib()    // 3
+ * fib()    // 5
+ */
+
+const fibonaccif = function(first, second){
+    return function(){
+        // delay the function so it gets the first two numbers
+        const next = first;
+        first = second;
+        second += next;
+        return next;
+    }
+}
