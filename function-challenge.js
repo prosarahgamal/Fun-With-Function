@@ -370,8 +370,6 @@ const reduce = function (arr, fun) {
     return accumlator;
 }
 
-console.log(reduce([2, 1, 3], add));
-
 /**
  * Make a function gensymf that makes a function 
  * that generates  unique symbols.
@@ -434,3 +432,58 @@ const fibonaccif = function(first, second){
         return next;
     }
 }
+
+/**
+ * Write a counter function that returns an object containing two functions 
+ * that implement an up/down counter, hiding the counter.
+ * 
+ * const object = counter(10), up = object.up, down = object.down;
+ * up()     // 11
+ * down()   // 10
+ * down()   // 9
+ * up()     // 10
+ */
+
+ const counter = function(c){
+     return {
+         up : function(){
+             c += 1;
+             return c;
+         },
+         down : function(){
+             c -= 1;
+             return c;
+         }
+     }
+ }
+
+/**
+ * this one is like limit but instead of using counter, use revoke function
+ * 
+ * Make a revocable function that takes a binary function, 
+ * and returns an object containing an invoke function 
+ * that can invoke the binary function, 
+ * and a revoke function that disables the invoke function.
+ * 
+ * const rev = revocable(add), add_rev = rev.invoke;
+ * add_rev(3, 4);    // 7
+ * rev.revoke();
+ * add_rev(5, 7);    // undefined
+ */
+
+const revocable = function(fun){
+    return {
+        invoke : function(...args){
+            return fun(...args);
+        },
+        revoke : function(){
+            fun = limit(fun, 0);
+        }
+    }
+}
+
+const rev = revocable(add), add_rev = rev.invoke;
+ console.log(add_rev(3, 4));
+ rev.revoke();
+ console.log(add_rev(5, 7));
+ 
