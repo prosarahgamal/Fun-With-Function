@@ -600,3 +600,68 @@ const addg = function(first){
         return retursion;
     }
 }
+
+/**
+ * Write a function liftg 
+ * that will take a binary function 
+ * and apply it to many invocations.
+ * 
+ * liftg(mul)()        // undefined
+ * liftg(mul)(3)()           // 3
+ * liftg(mul)(3)(0)(4)()     // 0
+ * liftg(mul)(1)(2)(4)(8)()  // 64
+ */
+
+const liftg = function(fun){
+    if (typeof fun !== 'function') {
+        return;
+    }
+    let accumlator;
+    return function retursion(x){
+        if (x === undefined) {
+            return accumlator;
+        }
+        if (accumlator === undefined) {
+            accumlator = x;
+            return retursion;
+        }
+        accumlator = fun(accumlator, x)
+        return retursion;
+    }
+}
+
+/**
+ * Write a function arrayg 
+ * that will build an array from many invocations.
+ * 
+ * arrayg()            // []
+ * arrayg(3)()         // [3]
+ * arrayg(3)(4)(5)()   // [3, 4, 5]
+ */
+
+const arrayg = function(x){
+    if (x === undefined) {
+        return [];
+    }
+    function createArray(arr, x){
+        arr.push(x);
+        return arr;
+    }
+    return liftg(createArray)([x]);
+}
+
+/**
+ * Make a function continuize 
+ * that takes a unary function, 
+ * and returns a function 
+ * that takes a callback and an argument.
+ * 
+ * sqrtc = continuize(Math.sqrt); 
+ * sqrtc(console.log, 81)    // 9
+ */
+
+const continuize = function(fun){
+    return function(callback, ...args){
+        return callback(fun(...args));
+    }
+}
