@@ -481,9 +481,122 @@ const revocable = function(fun){
         }
     }
 }
-
-const rev = revocable(add), add_rev = rev.invoke;
- console.log(add_rev(3, 4));
- rev.revoke();
- console.log(add_rev(5, 7));
  
+ /**
+  * Write a function m that takes a value and an optional source string 
+  * and returns them in an object.
+  * 
+  * JSON.stringify(m(1)) // {"value": 1, "source": "1"}
+  * JSON.stringify(m(Math.PI, "pi")) // {"value": 3.14159…, "source": "pi"}
+  */
+ const m = function(val, src=undefined){
+     return{
+         value : val,
+         source : (src === undefined) ? val : src
+     }
+ }
+
+/**
+ * Write a function addm that takes two m objects 
+ * and returns an m object.
+ * 
+ * JSON.stringify(addm(m(3), m(4))) // {"value": 7, "source": "(3+4)"}
+ * JSON.stringify(addm(m(1), m(Math.PI, "pi"))) // {"value": 4.14159…, "source": "(1+pi)"}
+ */
+
+ const addm = function(m1, m2){
+     return m(
+         m1.value + m2.value,
+         `(${m1.source}+${m2.source})`)
+ }
+
+/**
+ * MONAD
+ * Write a function liftm that takes a binary function and a string 
+ * and returns a function that acts on m objects.
+ * 
+ * const addm = liftm(add, "+");
+ * JSON.stringify(addm(m(3), m(4))) // {"value": 7, "source": "(3+4)"}
+ * JSON.stringify(liftm(mul, "*")(m(3), m(4))) // {"value": 12, "source": "(3*4)"}
+ */
+ 
+ const liftm = function(binary, s){
+     return function(x, y){
+         return m(binary(x.value, y.value), `(${x.source}${s}${y.source})`);
+     }
+ }
+
+/**
+ * Modify function liftm 
+ * so that the functions it produces can accept arguments 
+ * that are either numbers or m objects.
+ * 
+ * const addm = liftm(add, "+");
+ * JSON.stringify(addm(3, 4)) // {"value": 7, "source": "(3+4)"}
+ */
+
+ const modefiedLiftm = function(binary, s){
+     return function(x, y){
+         if (typeof x === 'number') {
+             x = m(x);
+         }
+         if (typeof y === 'number') {
+             y = m(y);
+         }
+         return m(binary(x.value, y.value), `(${x.source}${s}${y.source})`);
+     }
+ }
+
+ /**
+  * Write a function exp 
+  * that evaluates simple array expressions.
+  * 
+  * const sae = [mul, 5, 11];
+  * exp(sae)    // 55
+  * exp(42)     // 42
+  */
+
+  const exp = function(arr){
+      if (!Array.isArray(arr)) {
+          return arr;
+      }
+      return arr[0](...arr.slice(1));
+  }
+
+  /**
+   * Modify exp to evaluate nested array expressions.
+   * 
+   * const nae = [Math.sqrt, [add, [square, 3], [square, 4]]];
+   * exp(nae)    // 5
+   */
+
+const modefiedExp = function(arr){
+    return (Array.isArray(arr)) 
+    ? arr[0](modefiedExp(arr[1]), modefiedExp(arr[2])) 
+    : arr;
+}
+
+/**
+ * retursion: a function returns itself
+ * 
+ * Write a function addg 
+ * that adds from many invocations, 
+ * until it sees an empty invocation.
+ * 
+ * addg()             // undefined
+ * addg(2)()          // 2
+ * addg(2)(7)()       // 9
+ * addg(3)(0)(4)()    // 7
+ * addg(1)(2)(4)(8)() // 15
+ */
+
+const addg = function(first){
+    if(first === undefined) return undefined;
+    return function retursion(val){
+        if (val === undefined) {
+            return first;
+        }
+        first += val;
+        return retursion;
+    }
+}
