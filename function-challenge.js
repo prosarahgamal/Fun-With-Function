@@ -681,3 +681,65 @@ function constructor(spec) {
         other
     });
 }
+
+/**
+ * Make an array wrapper object 
+ * with methods get, store, and append, 
+ * such that an attacker cannot get access to the private array.
+ * 
+ * myvector = vector();
+ * myvector.append(7);
+ * myvector.store(1, 8);
+ * myvector.get(0)    // 7
+ * myvector.get(1)    // 8
+ */
+
+const vector = function(){
+    const arr = [];
+    return {
+        get: function(i){
+            return arr[i];
+        },
+        append: function(v){
+            arr.push(v);
+        },
+        store: function(i, v){
+            arr[i] = v;
+        }
+    }
+}
+
+/**
+ * Vulnerabilities in the array wrapper:
+ * the idea arrays in JS are just hash tables
+ * they are not really arrays
+ * so the key can be even a string
+ * 
+ * myvector = vector();
+ * var stash;
+ * myvector.append(5);
+ * myvector.store('push', function () {
+ *      stash = this;
+ * });
+ * myvector.append(); // to execute the push we just stored
+ * console.log(stash);  // [ 5, push: [Function] ]
+ */
+
+/**
+ * fix the array wrapper
+ */
+
+const fixedVector = function(){
+    const arr = [];
+    return {
+        get: function(i){
+            return arr[+i];
+        },
+        append: function(v){
+            arr[arr.length] = v;
+        },
+        store: function(i, v){
+            arr[+i] = v;
+        }
+    }
+}
