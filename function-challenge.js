@@ -743,3 +743,74 @@ const fixedVector = function(){
         }
     }
 }
+
+/**
+ * Make a function that makes a publish/subscribe object. 
+ * It will reliably deliver all publications 
+ * to all subscribers in the right order.
+ * 
+ * my_pubsub = pubsub();
+ * my_pubsub.subscribe(log);
+ * my_pubsub.publish("It works!");  // log("It works!")
+ */
+
+const pubsub = function(){
+    const subscribers = [];
+    return {
+        subscribe: function(sub){
+            subscribers[subscribers.length] = sub;
+        },
+        publish: function(pub){
+            subscribers.forEach((v) => v(pub));
+        }
+    }
+}
+
+/**
+ * Vulnerabilities in pubsub
+ * 
+ * my_pubsub.subscribe();
+ * if the user subscribed with nothing
+ * so that means undefined is pushed to subscribers array
+ * which will lead to an exception if publich is called
+ * and every sub after that undefined sub won't get the publish
+ * 
+ * my_pubsub.publish = undefined;
+ * 
+ * my_pubsub.subscribe(function(){
+ *      this.length = 0;
+ * });
+ * 
+ * out of order attack
+ * my_pubsub.subscribe(limit(function () {
+ *      my_pubsub.publish("Out of order");
+ * }, 1));
+ */
+
+/**
+ * fix pubsub
+ * freezing the object will prevent any modification
+ * on the subscribe and publish
+ * 
+ * Using forEach already prevents accessing the array using this
+ * 
+ * Using setTimeout will prevent out of order attack
+ */
+
+const fixedPubsub = function(){
+    const subscribers = [];
+    return Object.freeze({
+        subscribe: function(sub){
+            if (typeof sub === 'function') {
+                subscribers[subscribers.length] = sub;
+            }
+        },
+        publish: function(pub){
+            subscribers.forEach((v) => {
+                setTimeout(function(){
+                    v(pub);
+                }, 0);
+            });
+        }
+    });
+}
