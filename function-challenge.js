@@ -665,3 +665,19 @@ const continuize = function(fun){
         return callback(fun(...args));
     }
 }
+
+/**
+ * an object constructor
+ */
+
+function constructor(spec) {
+    let {member} = spec;
+    const {other} = other_constructor(spec);
+    const method = function () {
+        // spec, member, other, method
+    };
+    return Object.freeze({
+        method,
+        other
+    });
+}
